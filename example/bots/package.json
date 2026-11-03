@@ -1,0 +1,21 @@
+{
+  "name": "mineflayer-prometheus-demo",
+  "private": true,
+  "description": "Demo bots for mineflayer-prometheus, see ../README.md.",
+  "main": "demo.js",
+  "scripts": {
+    "start": "node demo.js"
+  },
+  "dependencies": {
+    "@headlesshq/mineflayer-prometheus": "file:../..",
+    "canvas": "3.2.3",
+    "mineflayer": "^4.39.0",
+    "node-canvas-webgl": "0.3.0",
+    "prismarine-viewer": "1.33.0",
+    "three": "0.128.0"
+  },
+  "overrides": {
+    "canvas": "3.2.3",
+    "gl": "8.1.6"
+  }
+}

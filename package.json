@@ -1,0 +1,65 @@
+{
+  "name": "@headlesshq/mineflayer-prometheus",
+  "version": "0.1.0",
+  "description": "A Prometheus exporter for mineflayer bots, with the metrics and dashboards of hmc-prometheus and optional game footage via prismarine-viewer.",
+  "homepage": "https://github.com/headlesshq/mineflayer-prometheus",
+  "bugs": "https://github.com/headlesshq/mineflayer-prometheus/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/headlesshq/mineflayer-prometheus.git"
+  },
+  "main": "index.js",
+  "types": "index.d.ts",
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "lib"
+  ],
+  "scripts": {
+    "test": "node --test",
+    "demo": "node example/bots/demo.js"
+  },
+  "keywords": [
+    "mineflayer",
+    "mineflayer-plugin",
+    "prometheus",
+    "grafana",
+    "loki",
+    "minecraft",
+    "metrics"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "prismarine-chat": "^1.12.0"
+  },
+  "peerDependencies": {
+    "canvas": "^3.0.0",
+    "mineflayer": "^4.0.0",
+    "node-canvas-webgl": "^0.3.0",
+    "prismarine-viewer": "^1.33.0",
+    "three": "0.128.0"
+  },
+  "peerDependenciesMeta": {
+    "canvas": {
+      "optional": true
+    },
+    "node-canvas-webgl": {
+      "optional": true
+    },
+    "prismarine-viewer": {
+      "optional": true
+    },
+    "three": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "mineflayer": "^4.39.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

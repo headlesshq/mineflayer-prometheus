@@ -1,0 +1,3 @@
+onboardAccessibility:false
+pauseOnLostFocus:false
+narrator:0

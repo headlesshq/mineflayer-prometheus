@@ -1,0 +1,146 @@
+# Prometheus, Loki and Grafana for mineflayer-prometheus (the same as for hmc-prometheus), see README.md.
+# All use the host network, so Prometheus can scrape bots that only listen on 127.0.0.1.
+# The demo profile adds a Minecraft server and three bots that render: docker compose --profile demo up -d --build
+# Host networking requires Linux (or Docker Desktop with host networking enabled), see README.md for alternatives.
+services:
+  prometheus:
+    image: prom/prometheus:v3.15.1@sha256:fa3302279710be2f21a8301ec17a8b4f2301fd829bd113839b3b6b02b6f191a2
+    network_mode: host
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=30d
+      - --web.listen-address=127.0.0.1:9090
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      # Every bot writes a file here, so Prometheus finds it no matter which port it got
+      - ${HMC_PROMETHEUS_TARGETS:-~/.hmc-prometheus/targets}:/targets:ro
+      - prometheus-data:/prometheus
+    restart: unless-stopped
+
+  loki:
+    image: grafana/loki:3.7.9@sha256:0db216b630ae1f348a1584c67f3cead8b4c1fc839169a39501db664744158e28
+    network_mode: host
+    command:
+      - -config.file=/etc/loki/loki.yml
+    volumes:
+      - ./loki/loki.yml:/etc/loki/loki.yml:ro
+      - loki-data:/loki
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:13.3.0@sha256:488984b716c0862639f91a698adbe2862677a5a07bad42da5f03f3030883b205
+    network_mode: host
+    environment:
+      GF_SERVER_HTTP_ADDR: 127.0.0.1
+      GF_SERVER_HTTP_PORT: "3000"
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
+      # Anyone who can reach Grafana can view the dashboards without logging in
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /etc/grafana/dashboards/minecraft-clients.json
+      # Grafana sandboxes iframes in text panels, which blocks the scripts of the HMC-Prometheus console.
+      # This also allows scripts in text panels, only users who can edit dashboards (admin) can add them.
+      GF_PANELS_DISABLE_SANITIZE_HTML: "true"
+      # The output of console commands appears in the log panel on the next refresh, allow refreshing every second
+      GF_DASHBOARDS_MIN_REFRESH_INTERVAL: 1s
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/etc/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - prometheus
+      - loki
+    restart: unless-stopped
+
+  # A Minecraft server for the demo bots, offline mode, only reachable from this machine
+  minecraft:
+    profiles: [demo]
+    image: itzg/minecraft-server:java21
+    ports:
+      - 127.0.0.1:25565:25565
+    environment:
+      EULA: "TRUE"
+      VERSION: "1.21.4"
+      ONLINE_MODE: "FALSE"
+      DIFFICULTY: easy
+      ALLOW_FLIGHT: "TRUE"
+      SPAWN_PROTECTION: "0"
+      VIEW_DISTANCE: "8"
+      MOTD: mineflayer-prometheus demo
+      MEMORY: 2G
+    volumes:
+      - minecraft-data:/data
+    healthcheck:
+      test: mc-health
+      start_period: 3m
+      interval: 5s
+      retries: 60
+    restart: unless-stopped
+
+  # Walker, Watcher and Laggy, see bots/demo.js. They render with prismarine-viewer in Xvfb.
+  bots:
+    profiles: [demo]
+    build:
+      context: ..
+      dockerfile: example/bots/Dockerfile
+    network_mode: host
+    # Root, so that the bots can write into your discovery directory with rootful and rootless Docker.
+    # Bots on the host can still delete the files, because the directory belongs to you.
+    user: root
+    environment:
+      MC_HOST: 127.0.0.1
+      LOKI_URL: http://127.0.0.1:3100
+      MINEFLAYER_PROMETHEUS_DISCOVERY_DIR: /targets
+    volumes:
+      - ${HMC_PROMETHEUS_TARGETS:-~/.hmc-prometheus/targets}:/targets
+    depends_on:
+      minecraft:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # A Fabric 1.21.4 client launched with HeadlessMc, with hmc-specifics and hmc-prometheus, joins the demo server:
+  # docker compose --profile demo --profile hmc up -d
+  hmc-client:
+    profiles: [hmc]
+    # HeadlessMc 3 needs Java 25
+    image: eclipse-temurin:25-jdk
+    network_mode: host
+    user: root
+    environment:
+      HOME: /data
+    entrypoint: ["sh", "/hmc/start.sh"]
+    volumes:
+      - ./hmc-client:/hmc:ro
+      - hmc-client-data:/data
+      - ${HMC_PROMETHEUS_TARGETS:-~/.hmc-prometheus/targets}:/targets
+    depends_on:
+      minecraft:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # The same client, but rendering in Xvfb: docker compose --profile demo --profile hmc-render up -d
+  hmc-client-render:
+    profiles: [hmc-render]
+    build: hmc-client
+    network_mode: host
+    user: root
+    environment:
+      HOME: /data
+      # a screenshot for every /live frame, hmc-prometheus still sleeps at least 100ms between frames
+      SCREENSHOT_INTERVAL_MS: "0"
+    entrypoint: ["sh", "/hmc/start-render.sh"]
+    volumes:
+      - ./hmc-client:/hmc:ro
+      - hmc-client-render-data:/data
+      - ${HMC_PROMETHEUS_TARGETS:-~/.hmc-prometheus/targets}:/targets
+    restart: unless-stopped
+
+volumes:
+  hmc-client-render-data:
+  hmc-client-data:
+  minecraft-data:
+  prometheus-data:
+  loki-data:
+  grafana-data:

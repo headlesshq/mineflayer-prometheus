@@ -1,0 +1,13 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "packages": {
+    ".": {
+      "include-component-in-tag": false,
+      "include-v-in-tag": false,
+      "package-name": "@headlesshq/mineflayer-prometheus",
+      "release-type": "node",
+      "bump-minor-pre-major": true,
+      "initial-version": "0.1.0"
+    }
+  }
+}
