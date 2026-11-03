@@ -1,0 +1,131 @@
+{
+  extends: [
+    ':enableRenovate',
+    ':semanticCommits',
+    'config:best-practices',
+  ],
+  timezone: 'UTC',
+  dependencyDashboard: true,
+  platformCommit: 'enabled',
+  prCreation: 'not-pending',
+  automergeStrategy: 'squash',
+  suppressNotifications: [
+    'prIgnoreNotification',
+  ],
+  rebaseWhen: 'conflicted',
+  enabledManagers: [
+    'npm',
+    'github-actions',
+    'docker-compose',
+    'dockerfile',
+  ],
+  packageRules: [
+    {
+      // the dependencies of the published package affect its users, so they should trigger a release
+      matchManagers: [
+        'npm',
+      ],
+      matchFileNames: [
+        'package.json',
+      ],
+      matchDepTypes: [
+        'dependencies',
+        'peerDependencies',
+      ],
+      semanticCommitType: 'fix',
+      semanticCommitScope: 'deps',
+    },
+    {
+      // peer dependencies are the versions we support, extend the ranges instead of dropping older versions
+      matchDepTypes: [
+        'peerDependencies',
+      ],
+      rangeStrategy: 'widen',
+    },
+    {
+      matchManagers: [
+        'npm',
+      ],
+      matchDepTypes: [
+        'devDependencies',
+      ],
+      semanticCommitType: 'chore',
+      semanticCommitScope: 'deps',
+    },
+    {
+      // the demo bots, the Prometheus, Loki, Grafana and Minecraft images of the example are not part of the package
+      matchFileNames: [
+        'example/**',
+      ],
+      semanticCommitType: 'chore',
+      semanticCommitScope: 'deps',
+    },
+    {
+      matchManagers: [
+        'github-actions',
+      ],
+      semanticCommitType: 'ci',
+      semanticCommitScope: 'deps',
+    },
+    {
+      // prismarine-viewer is built against three r128, newer versions break the renderer
+      matchPackageNames: [
+        'three',
+      ],
+      enabled: false,
+    },
+    {
+      // depends on old versions of gl and canvas, which are overridden in the example, see the README
+      matchPackageNames: [
+        'node-canvas-webgl',
+      ],
+      enabled: false,
+    },
+    {
+      // gl has prebuilt binaries up to Node.js 22, newer versions have to compile it, which fails
+      matchManagers: [
+        'dockerfile',
+      ],
+      matchPackageNames: [
+        'node',
+      ],
+      allowedVersions: '<23',
+    },
+    {
+      // the renderer of prismarine-viewer and the overrides of the example are tested together
+      matchFileNames: [
+        'example/bots/package.json',
+      ],
+      matchPackageNames: [
+        'prismarine-viewer',
+        'gl',
+        'canvas',
+      ],
+      groupName: 'renderer',
+    },
+    {
+      matchUpdateTypes: [
+        'major',
+      ],
+      addLabels: [
+        'dependency/major',
+      ],
+    },
+    {
+      matchUpdateTypes: [
+        'minor',
+      ],
+      addLabels: [
+        'dependency/minor',
+      ],
+    },
+    {
+      matchUpdateTypes: [
+        'patch',
+      ],
+      addLabels: [
+        'dependency/patch',
+      ],
+    },
+  ],
+}
