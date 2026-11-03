@@ -57,7 +57,7 @@ services:
   # A Minecraft server for the demo bots, offline mode, only reachable from this machine
   minecraft:
     profiles: [demo]
-    image: itzg/minecraft-server:java21
+    image: itzg/minecraft-server:java21@sha256:49544c0a15ede66914451b3c6cb880cb0bd2470b2bfa6f39794f14da02cca79a
     ports:
       - 127.0.0.1:25565:25565
     environment:
@@ -105,7 +105,7 @@ services:
   hmc-client:
     profiles: [hmc]
     # HeadlessMc 3 needs Java 25
-    image: eclipse-temurin:25-jdk
+    image: eclipse-temurin:25-jdk@sha256:83f4a7fc27df94dcc7b8de04d14cbbba8da14406f921e966969c3b09000aa507
     network_mode: host
     user: root
     environment:
