@@ -1,0 +1,49 @@
+{
+  "name": "mineflayer-prometheus",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  // Set DEVCONTAINER_USER=root when using rootless Docker.
+  "remoteUser": "${localEnv:DEVCONTAINER_USER:node}",
+  "runArgs": [
+    "--add-host=host.docker.internal:host-gateway"
+  ],
+  "mounts": [
+    "source=mineflayer-prometheus-npm-cache,target=/home/node/.npm,type=volume"
+  ],
+  "containerEnv": {
+    "npm_config_cache": "/home/node/.npm"
+  },
+  "forwardPorts": [
+    9400,
+    9401,
+    9402
+  ],
+  "portsAttributes": {
+    "9400": {
+      "label": "Exporter (metrics, /screenshot.png, /live)",
+      "onAutoForward": "notify"
+    },
+    "9401": {
+      "label": "Exporter, second demo bot (metrics, prismarine-viewer footage)",
+      "onAutoForward": "silent"
+    },
+    "9402": {
+      "label": "Exporter, third demo bot (metrics, prismarine-viewer footage)",
+      "onAutoForward": "silent"
+    }
+  },
+  "onCreateCommand": "sudo chown -R \"$(id -u):$(id -g)\" /home/node/.npm",
+  "postCreateCommand": "npm ci",
+  "hostRequirements": {
+    "cpus": 2,
+    "memory": "8gb"
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint"
+      ]
+    }
+  }
+}

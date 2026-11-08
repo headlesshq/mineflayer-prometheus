@@ -18,6 +18,7 @@
     'github-actions',
     'docker-compose',
     'dockerfile',
+    'devcontainer',
   ],
   packageRules: [
     {
