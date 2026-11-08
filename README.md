@@ -48,28 +48,6 @@ so override them in your `package.json` and install again:
 }
 ```
 
-## Development container
-
-The repository has a [devcontainer](.devcontainer/devcontainer.json) with Node.js 24 and the native libraries
-that `canvas` and `node-canvas-webgl` need, plus Xvfb. Open the repository in VS Code with the Dev Containers
-extension, or use the [devcontainer CLI](https://github.com/devcontainers/cli):
-
-```shell
-devcontainer up --workspace-folder .
-devcontainer exec --workspace-folder . npm test
-```
-
-`npm ci` runs when the container is created, the npm cache is kept in the `mineflayer-prometheus-npm-cache` volume.
-The ports `9400` to `9402` are forwarded, the exporters of the first three bots, which also serve the footage of
-prismarine-viewer on `/screenshot.png` and `/live`. To work on rendering, install the demo bots with the renderer
-and start them with a virtual display:
-
-```shell
-cd example/bots && npm install
-Xvfb :99 -screen 0 1280x720x24 -nolisten tcp & export DISPLAY=:99
-MC_HOST=host.docker.internal npm start
-```
-
 ## Configuration
 
 Options are passed to `prometheus(options)`. Every option can also be set with an environment variable,
