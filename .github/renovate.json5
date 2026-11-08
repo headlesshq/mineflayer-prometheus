@@ -19,7 +19,11 @@
     'docker-compose',
     'dockerfile',
     'devcontainer',
+    'nix',
   ],
+  nix: {
+    enabled: true,
+  },
   packageRules: [
     {
       // the dependencies of the published package affect its users, so they should trigger a release
@@ -67,6 +71,19 @@
       ],
       semanticCommitType: 'ci',
       semanticCommitScope: 'deps',
+    },
+    {
+      // there is no CI check for the flake yet, so the updates are not automerged
+      matchManagers: [
+        'nix',
+      ],
+      groupName: 'nix flake inputs',
+      schedule: [
+        'on the first day of the month',
+      ],
+      semanticCommitType: 'build',
+      semanticCommitScope: 'deps',
+      automerge: false,
     },
     {
       // prismarine-viewer is built against three r128, newer versions break the renderer
