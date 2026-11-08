@@ -1,0 +1,33 @@
+{
+  "name": "mineflayer-prometheus",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "remoteUser": "node",
+  "runArgs": [
+    "--add-host=host.docker.internal:host-gateway"
+  ],
+  "mounts": [
+    "source=mineflayer-prometheus-npm-cache,target=/home/node/.npm,type=volume"
+  ],
+  "forwardPorts": [
+    9400,
+    9401,
+    9402
+  ],
+  "portsAttributes": {
+    "9400": {
+      "label": "Exporter (metrics, /screenshot.png, /live)",
+      "onAutoForward": "notify"
+    },
+    "9401": {
+      "label": "Exporter, second demo bot (metrics, prismarine-viewer footage)",
+      "onAutoForward": "silent"
+    },
+    "9402": {
+      "label": "Exporter, third demo bot (metrics, prismarine-viewer footage)",
+      "onAutoForward": "silent"
+    }
+  },
+  "postCreateCommand": "npm ci"
+}
