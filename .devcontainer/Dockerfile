@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/devcontainers/javascript-node:24-bookworm
+FROM mcr.microsoft.com/devcontainers/javascript-node:26-bookworm@sha256:b47c85979be280319feb03fa4089cc8b168a13d50fc28d2f8333c15077a4989c
 
 # canvas needs cairo, pango and the image libraries; node-canvas-webgl's gl needs the GL headers and an X display (Xvfb),
 # and has no Node 24 prebuild, so it builds from source with a gyp step that calls `python`
