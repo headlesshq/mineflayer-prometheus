@@ -41,7 +41,7 @@ which joins the demo server as `HmcClient`, so that you can compare it with the 
 
 ```shell
 # HeadlessMc and the mods, they are not part of the repository
-gh release download 3.0.0-RC8 -R headlesshq/headlessmc -p headlessmc.jar -D hmc-client
+gh release download 3.0.0-RC9 -R headlesshq/headlessmc -p headlessmc.jar -D hmc-client
 gh release download 0.1.0 -R headlesshq/hmc-prometheus -p '*.jar' -D hmc-client/mods
 gh release download 1.21.4-3.0.1 -R headlesshq/hmc-specifics -p '*fabric*.jar' -D hmc-client/mods
 docker compose --profile demo --profile hmc up -d
