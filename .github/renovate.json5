@@ -5,7 +5,9 @@
     'config:best-practices',
   ],
   timezone: 'UTC',
-  dependencyDashboard: true,
+  dependencyDashboard: {
+    enabled: true,
+  },
   platformCommit: 'enabled',
   prCreation: 'not-pending',
   automergeStrategy: 'squash',
@@ -26,7 +28,6 @@
   },
   packageRules: [
     {
-      // the dependencies of the published package affect its users, so they should trigger a release
       matchManagers: [
         'npm',
       ],
@@ -41,7 +42,6 @@
       semanticCommitScope: 'deps',
     },
     {
-      // peer dependencies are the versions we support, extend the ranges instead of dropping older versions
       matchDepTypes: [
         'peerDependencies',
       ],
@@ -58,7 +58,6 @@
       semanticCommitScope: 'deps',
     },
     {
-      // the demo bots, the Prometheus, Loki, Grafana and Minecraft images of the example are not part of the package
       matchFileNames: [
         'example/**',
       ],
@@ -73,7 +72,6 @@
       semanticCommitScope: 'deps',
     },
     {
-      // there is no CI check for the flake yet, so the updates are not automerged
       matchManagers: [
         'nix',
       ],
@@ -86,21 +84,18 @@
       automerge: false,
     },
     {
-      // prismarine-viewer is built against three r128, newer versions break the renderer
       matchPackageNames: [
         'three',
       ],
       enabled: false,
     },
     {
-      // depends on old versions of gl and canvas, which are overridden in the example, see the README
       matchPackageNames: [
         'node-canvas-webgl',
       ],
       enabled: false,
     },
     {
-      // gl has prebuilt binaries up to Node.js 22, newer versions have to compile it, which fails
       matchManagers: [
         'dockerfile',
       ],
@@ -110,7 +105,6 @@
       allowedVersions: '<23',
     },
     {
-      // the renderer of prismarine-viewer and the overrides of the example are tested together
       matchFileNames: [
         'example/bots/package.json',
       ],
