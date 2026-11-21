@@ -57,7 +57,7 @@ services:
   # A Minecraft server for the demo bots, offline mode, only reachable from this machine
   minecraft:
     profiles: [demo]
-    image: itzg/minecraft-server:java21@sha256:ad1c2569ab3a4e6f032cb04e528455f8a2130196f82b2b37d5842abe032fda2e
+    image: itzg/minecraft-server:java21@sha256:05c31de8057e9beb59f8c47480c92c60bb0b0882968a6ce68de5c5389bea9ca9
     ports:
       - 127.0.0.1:25565:25565
     environment:
