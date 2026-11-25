@@ -1,6 +1,6 @@
 # Demo bots with rendering. Node 22, because the native gl and canvas modules of the renderer have prebuilt binaries for it.
 # Built from the root of the repository: docker compose --profile demo up -d --build
-FROM node:22-bookworm@sha256:e13726ca604184d7a91fcacab1fc09eefd642dc28e79ac34e85540dd93b78cfb
+FROM node:22-bookworm@sha256:7c400d78797d8cbe3f6bb21d2227b86af4cd24b0014cc9f62ff989cc16de988e
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends xvfb xauth libgl1 libegl1 libglx-mesa0 libgl1-mesa-dri \
